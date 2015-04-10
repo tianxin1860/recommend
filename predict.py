@@ -9,6 +9,9 @@ _DEBUG = False
 import csv
 from collections import defaultdict
 import gl
+import numpy as np
+import scipy as sp
+import scipy.sparse.linalg 
 
 #import numpy as np
 
@@ -132,6 +135,48 @@ def BuildMatrix():
             print matrix[i][j],
         print "\n"
 
-BuildDict()
-StandardSort()
-BuildMatrix()
+
+def ReadMatrix():
+    '''read data to return matrix'''
+    matrix = []    
+    with open('matrix.txt','r') as InputFile:
+            line = InputFile.readline()
+            #i = 0
+            #while i < 20:
+            while line:
+                line = line.strip().split(' ')
+                row = map(int, line)
+                matrix.append(row)
+                line = InputFile.readline()
+                #i += 1
+            return matrix
+
+def SVD(X):            
+        #U, S, V = np.linalg.svd(X, full_matrices=False)
+        U, S, V = scipy.sparse.linalg.svds(X, k=10)
+        Ufile = open('u.txt','w')
+        Sfile = open('s.txt','w')
+        Vfile = open('v.txt','w')
+        for i in range(U.shape[0]):
+                Ufile.write(str(U[i]))
+                Ufile.write('\n')
+        for i in range(V.shape[0]):
+                Vfile.write(str(V[i]))
+                Vfile.write('\n')
+        Sfile.write(str(S))
+        #Sfile.write('\n')        
+
+
+def ComputeSimi():
+        data = ReadMatrix()
+        matrix = np.array(data)
+        print matrix.shape
+
+#BuildDict()
+#StandardSort()
+#BuildMatrix()
+#ComputeSimi()        
+data = ReadMatrix()
+matrix = np.array(data, dtype=float)
+#print matrix
+SVD(matrix)
